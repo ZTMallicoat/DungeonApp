@@ -8,6 +8,12 @@ namespace Dungeon
 {
     class Program
     {
+        /* TODO FIX BUGS
+         * Enemy Shaman stats do not run fun math
+         * 
+         * TODO BALANCING
+         * Increase player hit chance
+         */
         static void Main(string[] args)
         {
             #region Console Set Up
@@ -67,7 +73,7 @@ namespace Dungeon
             #region Character Creator
             int PcConstitution = 100;
             int C = 1;
-            int PcMagicProt = 100;
+            int PcMagicProt = 10;
             int P = 1;
             int PcAvoidance = 10;
             int A = 1;
@@ -208,11 +214,12 @@ namespace Dungeon
                 }
             } while (PcClNbr != "1" && PcClNbr != "2" && PcClNbr != "3" && PcClNbr != "4" && PcClNbr != "5" && PcClNbr != "6" && PcClNbr != "7" && PcClNbr != "8" && PcClNbr != "9");
             Console.Clear();
+            Console.WriteLine($"you picked {PcClass}");
             #endregion
             Console.WriteLine("What is your adventurer's name?");
             string PC = Console.ReadLine();
             Console.Clear();
-            #region Fun Math
+            #region Fun Math PC
             int PcC = (C * C) - 1;
             int MultiplierC = PcConstitution;
             PcConstitution = PcConstitution + PcC * (MultiplierC / (C * C));
@@ -277,7 +284,7 @@ namespace Dungeon
                         break;
                 }
             } while (YNStart != "1" && YNStart != "2");
-            #region Room And Enemy Creator
+            #region Room
             string[] Rooms =
         {
                 "The room is simple, but large.\nUnpainted Oakwood panelling lines the walls about 3 feet up, where the walls then turn to cobblestone.\nWooden crossbeams span the ceiling from wall to wall,\nwith 4 or 5 structural columns throughout the floorspace keeping the room standing.",
@@ -303,7 +310,7 @@ namespace Dungeon
                 #region Enemy Creator
                 int EnConstitution = 100;
                 int EnC = 1;
-                int EnMagicProt = 100;
+                int EnMagicProt = 10;
                 int EnP = 1;
                 int EnAvoidance = 10;
                 int EnA = 1;
@@ -315,7 +322,7 @@ namespace Dungeon
                 int EnM = 1;
                 #region Race
                 Random Enrand = new Random();
-                int EnRcNbr = Enrand.Next(10);
+                int EnRcNbr = Enrand.Next(1, 10);
                 string EnRace = "";
                 switch (EnRcNbr)
                 {
@@ -374,11 +381,10 @@ namespace Dungeon
                         EnA++;
                         break;
                 }
-                Console.WriteLine($"your opponent is {EnRace}");
                 #endregion
                 #region Class
                 Random Enrand0 = new Random();
-                int EnClNbr = Enrand0.Next(10);
+                int EnClNbr = Enrand0.Next(1, 10);
                 string EnClass = "";
                 switch (EnClNbr)
                 {
@@ -430,6 +436,32 @@ namespace Dungeon
                 }
                 Console.WriteLine($"The enemy is a {EnRace} {EnClass}");
                 #endregion
+                #region Fun Math EN
+                int EnnC = (EnC * EnC) - 1;
+                int EnMultiplierC = EnConstitution;
+                EnConstitution = EnConstitution + EnnC * (EnMultiplierC / (EnC * EnC));
+                Console.WriteLine($"Enemy has a constitution of: {EnConstitution}");
+                int EnnA = (EnA * EnA) - 1;
+                int EnMultiplierA = EnAvoidance;
+                EnAvoidance = EnAvoidance + EnnA * (EnMultiplierA / (EnA * EnA));
+                Console.WriteLine($"Enemy has an avoidance of: {EnAvoidance}");
+                int EnMP = (EnP * EnP) - 1;
+                int EnMultiplierP = EnMagicProt;
+                EnMagicProt = EnMagicProt + EnMP * (EnMultiplierP / (EnP * EnP));
+                Console.WriteLine($"Enemy has a magic resistance of: {EnMagicProt}");
+                int EnnS = (EnS * EnS) - 1;
+                int EnMultiplierS = EnSlash;
+                EnSlash = EnSlash + EnnS * (EnMultiplierS / (EnS * EnS));
+                Console.WriteLine($"Enemy has a slash attack value of: {EnSlash}");
+                int EnnB = (EnB * EnB) - 1;
+                int EnMultiplierB = EnBlunt;
+                EnBlunt = EnBlunt + EnnB * (EnMultiplierB / (EnB * EnB));
+                Console.WriteLine($"Enemy has a blunt attack value of: {EnBlunt}");
+                int EnnM = (EnM * EnM) - 1;
+                int EnMultiplierM = EnMagic;
+                EnMagic = EnMagic + EnnM * (EnMultiplierM / (EnM * EnM));
+                Console.WriteLine($"Enemy has a magic attack value of: {EnMagic}");
+                #endregion
                 #endregion
                 string An = "";
                 switch (EnRace)
@@ -442,7 +474,7 @@ namespace Dungeon
                         break;
                 }
                 Random Rand1 = new Random();
-                int RandInt1 = Rand1.Next(3);
+                int RandInt1 = Rand1.Next(1, 3);
                 int EnPickType = 0;
                 switch (RandInt1)
                 {
@@ -487,10 +519,13 @@ namespace Dungeon
                         Console.WriteLine("ROCK ENCOUNTER ROCK ENCOUNTER ROCK ENCOUNTER ROCK ENCOUNTER");
                         break;
                 }
-                Console.WriteLine($"Across from you stands a{An} {EnRace}.  They look just as confused as you.\nAs they open their mouth to speak to you,\na booming voice takes their attention, as well as your own.  \n\"Only one may leave.\"");
+                if (RoomNum == 1) { Console.WriteLine($"Across from you stands a{An} {EnRace}.  They look just as confused as you.\nAs they open their mouth to speak to you,\na booming voice takes their attention, as well as your own.  \n\"Only one may leave.\"\nYou can:\n-Attack your opponent\n-Ready a powerful 2-turn attack that is negated if you take damage\n-Shunt an incoming magical attack, increasing the damage of the next magical attack you use.\n-Attempt to intimidate your opponent"); }
+                else { Console.WriteLine($"Like the room you just left, there is now across from you another wayward soul; this time a {EnRace} {EnClass}.  You both seem to know what comes next..."); }
+                bool OverCharge = false;
+                bool CritStrike = false;
                 do
                 {
-                    Console.WriteLine("What is your command?\n1. Attack\n2. Brace\n3. Shunt\n4. Intimidate");
+                    Console.WriteLine("What is your command?\n1. Attack\n2. Focus\n3. Shunt\n4. Intimidate");
                     string PlayerInput = Console.ReadLine().ToUpper();
                     if (PlayerInput == "1" || PlayerInput == "2" || PlayerInput == "3" || PlayerInput == "4")
                     {
@@ -499,6 +534,7 @@ namespace Dungeon
                         switch (PlayerInputParsed)
                         {
                             case 1:
+                                #region Attack
                                 Console.WriteLine("How would you like to strike your foe?\n1. Slash \n2. Blunt \n3. Magic ");
                                 string PcAttack = Console.ReadLine().ToUpper();
                                 do
@@ -520,27 +556,62 @@ namespace Dungeon
                                             switch (PcAttackI)
                                             {
                                                 case 1:
+                                                    int PcSlashInitializer = PcSlash;
+                                                    if (CritStrike == true)
+                                                    {
+                                                        PcSlash = PcSlash * 3;
+                                                        CritStrike = false;
+                                                    }
                                                     EnConstitution = EnConstitution - PcSlash * 2;
+                                                    PcSlash = PcSlashInitializer;
                                                     break;
                                                 case 2:
+                                                    int PcBluntInitializer = PcBlunt;
+                                                    if (CritStrike == true)
+                                                    {
+                                                        PcBlunt = PcBlunt * 3;
+                                                        CritStrike = false;
+                                                    }
                                                     EnConstitution = EnConstitution - PcBlunt * 2;
+                                                    PcBlunt = PcBluntInitializer;
                                                     break;
                                                 case 3:
-                                                    EnConstitution = EnConstitution - PcMagic * 2;
+                                                    int PcMagicInitializer = PcMagic;
+                                                    if (CritStrike == true)
+                                                    {
+                                                        PcMagic = PcMagic * 3;
+                                                        CritStrike = false;
+                                                    }
+                                                    if (OverCharge == true)
+                                                    {
+                                                        EnConstitution = EnConstitution - PcMagic * 6;
+                                                        OverCharge = false;
+                                                    }
+                                                    else
+                                                    {
+                                                        EnConstitution = EnConstitution - PcMagic * 2;
+                                                    }
+                                                    PcMagic = PcMagicInitializer;
                                                     break;
                                             }
                                             if (EnConstitution > 0)
                                             {
                                                 Console.WriteLine($"Your opponent's Health: {EnConstitution}");
                                             }
+                                            else
+                                            {
+                                                Console.WriteLine("You land a killing blow!");
+                                            }
                                         }
                                     }
                                 } while (PcAttack != "1" && PcAttack != "2" && PcAttack != "3");
+                                #endregion
                                 break;
                             case 2:
-                                Console.WriteLine("You stand ready to take a physical attack!");
+                                Console.WriteLine("You scan your opponent, waiting for the perfect opportunity to strike!");
                                 break;
                             case 3:
+                                Console.WriteLine("You utter a counterspell to ward off magical damage!");
                                 break;
                             case 4:
                                 if (PcConstitution >= 2 * EnConstitution)
@@ -559,12 +630,16 @@ namespace Dungeon
                         {
                             #region Enemy's turn
                             Random RanHitChance = new Random();
-                            int EnHitChance = RanHitChance.Next(41);
+                            int EnHitChance = RanHitChance.Next(1, 41);
                             if (EnClNbr == 2 || EnClNbr == 6) { EnHitChance = (8 * EnHitChance) / 9; }
                             Console.WriteLine("your opponent attacks you!");
                             if (EnHitChance <= PcAvoidance)
                             {
                                 Console.WriteLine("But They missed!");
+                                if (PlayerInputParsed == 2)
+                                {
+                                    CritStrike = true;
+                                }
                             }
                             else
                             {
@@ -574,14 +649,17 @@ namespace Dungeon
                                     case 6:
                                         if (PlayerInputParsed == 2)
                                         {
-                                            PcConstitution = PcConstitution - (5 / 4) * EnSlash;
+                                            PcConstitution = PcConstitution - ((5 / 4) * EnSlash);
                                         }
                                         else
                                         {
-                                            PcConstitution = PcConstitution - (5 / 4) * EnSlash * 3;
+                                            PcConstitution = PcConstitution - ((5 / 4) * EnSlash * 3);
                                         }
                                         Console.WriteLine("your opponent swings their blade at you, leaving behind a nasty gash!");
-                                        Console.WriteLine($"Player health: {PcConstitution}");
+                                        if (PcConstitution > 0)
+                                        {
+                                            Console.WriteLine($"Player Health: {PcConstitution}");
+                                        }
                                         break;
 
                                     case 1:
@@ -597,7 +675,10 @@ namespace Dungeon
                                             PcConstitution = PcConstitution - (EnBlunt * 2);
                                         }
                                         Console.WriteLine("your opponent bludgeons you!");
-                                        Console.WriteLine($"Player health: {PcConstitution}");
+                                        if (PcConstitution > 0)
+                                        {
+                                            Console.WriteLine($"Player Health: {PcConstitution}");
+                                        }
                                         break;
                                     case 3:
                                     case 8:
@@ -606,22 +687,31 @@ namespace Dungeon
                                         if (PlayerInputParsed == 3)
                                         {
                                             Random Rand2 = new Random();
-                                            int ShuntEff = Rand2.Next(7);
-                                            Console.WriteLine($"{PC} Shunted the attack!");
+                                            int ShuntEff = Rand2.Next(1, 7);
+                                            Console.WriteLine($"{PC} Shunted the attack\nBy absorbing some of the energy into yourself, your next magical attack will yield increased damage!");
                                             PcConstitution = PcConstitution - ((ShuntEff * EnMagic / 2) - PcMagicProt);
+                                            OverCharge = true;
                                         }
                                         else
                                         {
                                             PcConstitution = PcConstitution - ((EnMagic * 3) - PcMagicProt);
                                         }
-                                        Console.WriteLine($"Player Health: {PcConstitution}");
+                                        if (PcConstitution > 0)
+                                        {
+                                            Console.WriteLine($"Player Health: {PcConstitution}");
+                                        }
                                         break;
+                                }
+                                if (PlayerInputParsed == 2)
+                                {
+                                    Console.WriteLine("Your focus is broken!");
                                 }
                             }
                             #endregion
                         }
                         else
                         {
+                            #region Victory
                             PcConstitution = PcConstitutionMax;
                             score = score++;
                             RoomNum = RoomNum++;
@@ -649,16 +739,16 @@ namespace Dungeon
                             EnB = EnB++;
                             EnM = EnM++;
                             reload = true;
+                            #endregion
                         }
                     }
                     else
                     {
                         Console.WriteLine("please make a choice by typing the number you would like to select and hitting enter");
                     }
-                    Console.Clear();
                     if (PcConstitution <= 0)
                     {
-                        Console.WriteLine($"{PC} is dead...");
+                        Console.WriteLine($"{PC} has been killed...");
                         reload = true;
                         exit = true;
                     }
